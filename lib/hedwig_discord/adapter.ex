@@ -1,6 +1,8 @@
 defmodule Hedwig.Adapters.Discord do
   use Hedwig.Adapter
   use Coxir
+  require Logger
+
 
   defmodule State do
     defstruct conn: nil,
@@ -31,29 +33,6 @@ defmodule Hedwig.Adapters.Discord do
   end
 
   def handle_info(%{"user" => user}, %{id: user} = state) do
-    {:noreply, state}
-  end
-
-  def handle_info(
-        %{"type" => "message", "user" => user} = msg,
-        %{robot: robot, users: users} = state
-      ) do
-    msg = %Hedwig.Message{
-      ref: make_ref(),
-      robot: robot,
-      room: msg["channel"],
-      text: msg["text"],
-      type: "message",
-      user: %Hedwig.User{
-        id: user,
-        name: users[user]["name"]
-      }
-    }
-
-    if msg.text do
-      :ok = Hedwig.Robot.handle_in(robot, msg)
-    end
-
     {:noreply, state}
   end
 
